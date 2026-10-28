@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useState } from "react";
+import { CiCircleRemove } from "react-icons/ci";
 
 const PRIORITIES = ["Low", "Medium", "High"];
 
@@ -12,13 +13,17 @@ function Card({
     title="", description="", 
     priority="", status="", 
     mode="Display", onValueChange={},
-    onSubmit=()=>{}
+    onSubmit=()=>{},
+    onCancel=()=>{}
 }) {
     const isDisplayMode = mode == "Display" ?true :false;
     return (
 
         // The big container (card)
-        <div className="flex-row bg-amber-50 p-3 space-y-2">
+        <div className={clsx(
+            "flex-row bg-amber-50 rounded-2xl py-3.5 px-5.5 space-y-2",
+            !isDisplayMode && "drop-shadow-2xl shadow-2xl"
+            )}>
 
             {/* The First Row (title & priority) */}
             <div className="flex justify-between">
@@ -63,7 +68,7 @@ function Card({
 
             {/* Description */}
             {isDisplayMode
-            ? <span>{description}</span>
+            ? <div className="text-left"><span>{description}</span></div>
             : <textarea 
             type="text"
             className="w-full"
@@ -104,13 +109,22 @@ function Card({
                 </div>
 
 
-                {/* Submit Button only appear in "Edit/Update" Mode */}
+                {/* Submit Button & Close Button only appear in "Edit/Update" Mode */}
                 {mode != "Display" 
-                && <button
-                className="rounded-xl p-2 font-bold w-fit cursor-pointer bg-amber-600 text-white"
-                disabled={false} 
-                onClick={onSubmit()}
-                >Submit</button>
+                && <span className="flex space-x-2">
+                    <button
+                        className="rounded-xl p-2 font-bold w-fit cursor-pointer bg-red-600 text-white text-center flex space-x-1.5"
+                        onClick={onCancel}
+                    >
+                        <CiCircleRemove size={28}/>
+                        <span>Cancel</span>
+                    </button>
+                    <button
+                        className="rounded-xl p-2 font-bold w-fit cursor-pointer bg-amber-600 text-white"
+                        disabled={false} 
+                        onClick={onSubmit}
+                    >Submit</button>
+                </span>
                 }
             </div>
 
@@ -128,7 +142,7 @@ export function TodoCard({title, description, priority, status}) {
     />;
 }
 
-export function TodoCardForms({onConfirm}) {
+export function TodoCardForms({onConfirm, onClose}) {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [priority, setPriority] = useState(PRIORITIES[1]);
@@ -145,8 +159,10 @@ export function TodoCardForms({onConfirm}) {
                 setPriority, setStatus
             }}
             onSubmit={() => {
-                // process with submit
+                
+                onConfirm({title, description, priority, status}); // process with submit
             }}
+            onCancel={onClose}
         />
     );
 
