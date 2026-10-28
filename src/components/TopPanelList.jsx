@@ -1,15 +1,17 @@
 import { CiSearch, CiTrash, CiCirclePlus, CiEdit, CiCircleCheck } from "react-icons/ci";
 import clsx from "clsx";
 
-const panelItems = [
-    { id: "Add", icon: CiCirclePlus },
-    { id: "Edit", icon: CiEdit },
-    { id: "Remove", icon: CiTrash }
-];
-
 const isSelectAll = false;
 
-export default function TopPanelList(isSelectingOn) {
+export default function TopPanelList({ onShowNewItemCard }) {
+
+    // this is a set of functionality control, each of them will have their own use case
+    // onExec will store their excution (lambda) when user click on it
+    const panelItems = [
+        { id: "Add", icon: CiCirclePlus, onExec: () => onShowNewItemCard() },
+        { id: "Edit", icon: CiEdit, onExec: () => {} },
+        { id: "Remove", icon: CiTrash, onExec: () => {} }
+    ];
     return (
         <div className="space-x-3 flex">
             <div className="flex items-center space-x-2 px-2 rounded-2xl outline">
@@ -21,6 +23,7 @@ export default function TopPanelList(isSelectingOn) {
                 return (
                     <button 
                     key={item.id}
+                    onClick={item.onExec}
                     className="rounded-full bg-amber-600 p-2 cursor-pointer"
                     >
                         <Icon className="text-amber-50" size={20}/>
