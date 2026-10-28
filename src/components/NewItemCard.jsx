@@ -1,15 +1,14 @@
-import TodoCard from "./TodoCard";
+import { TodoCardForms } from "./TodoCard";
 
 
 export default function NewItemCard() {
     return (
-        <div>
-            <text>Create New TODO</text>
-            <TodoCard 
-            title="hello" 
-            description="hello how are you!" 
-            priority="High"
-            status="Completed"
+        <div className="flex-row space-y-2.5">
+            <h2>Create New TODO</h2>
+            <TodoCardForms
+            onConfirm={(title, description, priority, status) => {
+
+            }}
              />
         </div>
     );
