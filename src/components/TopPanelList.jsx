@@ -6,7 +6,7 @@ import { BUTTON_VARIANT } from "../constants/button-variant";
 export default function TopPanelList({ 
     onShowNewItemCard, onEditMode, onDeleteMode,
     showNewItemCard, editMode, deleteMode,
-    isSelectAll = false
+    isSelectAll = false, onSelectAll=()=>{}
  }) {
 
     const selectAll = () => ( // select all icon, this icon only appear in delete mode
@@ -17,6 +17,7 @@ export default function TopPanelList({
                 className="px-1.5"
             >Cancel</Button>
             <button 
+            onClick={onSelectAll}
             className={clsx(
                 "self-center rounded-full text-white cursor-pointer",
                 isSelectAll ? "bg-green-300" : "text-black"
