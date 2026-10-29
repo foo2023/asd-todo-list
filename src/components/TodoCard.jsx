@@ -15,7 +15,7 @@ export const CARD_MODE = Object.freeze({
 // This is the reusable component for display and modifying or creating.
 // All the state is pass from the parrent.
 // to keep everything clean
-function Card({
+export function Card({
     title="", description="", 
     priority=PRIORITY.MEDIUM, status=STATUS.TODO, 
     mode=CARD_MODE.DISPLAY, // default is display 
@@ -25,7 +25,8 @@ function Card({
     onCardSelect=()=>{},
 
     // use when the card is for create and edit
-    onValueChange={}, onSubmit=()=>{}, onCancel=()=>{}
+    onValueChange={}, onSubmit=()=>{}, onCancel=()=>{},
+    editMode=false, onEditFocus=()=>{}
 
 }) {
     const isDisplayMode = mode == CARD_MODE.DISPLAY? true: false;
@@ -42,13 +43,21 @@ function Card({
             </button>
     }
 
+    const handleCardClick = () => {
+        // because the handle click will only be call when (displayMode & editMode is true)
+        onEditFocus(); // after focus to current, enter edit mode
+    }
+
     return (
 
         // The big container (card)
-        <div className={clsx(
+        <div 
+            onClick={isDisplayMode && editMode? handleCardClick: undefined} // only happen when display and edit mode true
+            className={clsx(
             "flex-row bg-amber-50 rounded-2xl py-3.5 px-5.5 space-y-2 relative",
             !isDisplayMode && "drop-shadow-2xl shadow-2xl"
-            )}>
+            )}
+        >
 
             {/* Only appear in the card for "display" when in delete mode */}
             {isDisplayMode&& deleteMode&& itemPicker()}
@@ -163,7 +172,8 @@ function Card({
     );
 }
 
-export function TodoCard({ title, description, priority, status, isCardSelected, deleteMode, onCardSelect }) {
+// this todo card that only use for display
+export function DisplayCard({ title, description, priority, status, isCardSelected, deleteMode, onCardSelect }) {
     return <Card 
         title={title}
         description={description}
@@ -176,14 +186,22 @@ export function TodoCard({ title, description, priority, status, isCardSelected,
     />;
 }
 
-export function TodoCardForms({onConfirm, onClose}) {
+// use in (create and edit)
+// hold the state
+export function TodoCardForms({
+    data, // basic data
 
-    // default data to the user when they creating
-    const id = Math.random();
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [priority, setPriority] = useState(PRIORITY.MEDIUM);
-    const [status, setStatus] = useState(STATUS.TODO);
+    // edit mode attributes
+    onConfirm, onClose
+}) {
+
+    // assign all the data in state
+    const id = Math.random(data.id);
+    const [title, setTitle] = useState(data.title);
+    const [description, setDescription] = useState(data.description);
+    const [priority, setPriority] = useState(data.priority);
+    const [status, setStatus] = useState(data.status);
+    
     return (
         <Card 
             mode="Forms"
@@ -191,16 +209,46 @@ export function TodoCardForms({onConfirm, onClose}) {
             description={description}
             priority={priority}
             status={status}
+
+            // a set of state update use for callback
             onValueChange={{
                 setTitle, setDescription,
                 setPriority, setStatus
             }}
-            onSubmit={() => {
-                
-                onConfirm({id, title, description, priority, status}); // process with submit
-            }}
-            onCancel={onClose} // callback from children, signal back to the parrent to close the current card
+            onSubmit={() => onConfirm({ ...data, title, description, priority, status })} // process with submit data
+            onCancel={onClose} // callback, signal back to the parrent, exit the card (edit/create) mode
         />
     );
 
+}
+
+// entrance to the todocards in the list(each card)
+export function TodoCard({ 
+    // basic information
+    data,
+
+    // edit
+    editMode=false, editFocus=false, onEditFocus=()=>{},
+    onEdit=()=>{}, onClose=()=>{},
+
+    // remove/delete
+    deleteMode=false, isCardSelected=false, onCardSelect=()=>{}
+
+ }) {
+    return (
+        editMode && editFocus
+        ?<TodoCardForms data={data} onConfirm={onEdit} onClose={onClose} />
+        :<Card
+            title={data.title}
+            description={data.description}
+            priority={data.priority}
+            status={data.status}
+            deleteMode={deleteMode}
+            isCardSelected={isCardSelected}
+            editMode={editMode}
+            onCardSelect={onCardSelect}
+            onEditFocus={onEditFocus}
+            mode={CARD_MODE.DISPLAY}
+        />
+    );
 }
