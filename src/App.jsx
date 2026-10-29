@@ -23,7 +23,22 @@ function App() {
                     setShowNewItemCard(!showNewItemCard);
                 }}
                 onEditMode={() => setEditMode(!editMode)}
-                onDeleteMode={() => setDeleteMode(!deleteMode)}
+                onDeleteMode={(mode=1) => {
+                    /* ToggleMode=1; PerformDelete=2 */
+
+                    // currently on the delete mode
+                    // user want to perform delete
+                    if (deleteMode && mode == 2) { 
+                        //TODO (get data from the TodoList)
+
+                        // After delete success, toggle the delete mode (exit delete mode)
+                        console.log("Perform deletion");
+                        setDeleteMode(!deleteMode);
+                    } else {
+                        // other than that, toggle between delete mode
+                        setDeleteMode(!deleteMode);
+                    }
+                }}
                 showNewItemCard={showNewItemCard}
                 editMode={editMode}
                 deleteMode={deleteMode}
