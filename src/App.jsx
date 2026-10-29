@@ -7,6 +7,8 @@ import { TodoCard } from './components/TodoCard'
 function App() {
     const [todoList, setTodoList] = useState([]); // the todo list items placed in here
     const [showNewItemCard, setShowNewItemCard] = useState(false); // display the create item card or not
+    const [editMode, setEditMode] = useState(false);
+    const [deleteMode, setDeleteMode] = useState(false);
 
     return (
         <>
@@ -16,9 +18,16 @@ function App() {
             </>
 
             {/* Main panel (search, add, remove, edit) Icon - User can toggle to do these */}
-            <TopPanel onShowNewItemCard={() => {
-                setShowNewItemCard(!showNewItemCard);
-            }}/>
+            <TopPanel 
+                onShowNewItemCard={() => {
+                    setShowNewItemCard(!showNewItemCard);
+                }}
+                onEditMode={() => setEditMode(!editMode)}
+                onDeleteMode={() => setDeleteMode(!deleteMode)}
+                showNewItemCard={showNewItemCard}
+                editMode={editMode}
+                deleteMode={deleteMode}
+            />
 
 
 
@@ -38,22 +47,22 @@ function App() {
 
 
 
-            {/* TODO list items */}
-            {todoList.length == 0
-            ? <h2>Todo list is empty.</h2>
-            :<ul className="space-y-3.5"> {
-                todoList.map((data) => (
-                <li>
-                    <TodoCard 
-                    title={data.title}
-                    description={data.description}
-                    priority={data.priority}
-                    status={data.status}
-                    />
-                </li>
-                ))}
-            </ul>
-            }
+                {/* TODO list items */}
+                {todoList.length == 0
+                ? <h2>Todo list is empty.</h2>
+                :<ul className="space-y-3.5"> {
+                    todoList.map((data) => (
+                    <li>
+                        <TodoCard 
+                        title={data.title}
+                        description={data.description}
+                        priority={data.priority}
+                        status={data.status}
+                        />
+                    </li>
+                    ))}
+                </ul>
+                }
                 
 
             </div>
