@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { BUTTON_VARIANT } from "../constants/button-variant";
 
 const VARIANT_STYLES = {
     [BUTTON_VARIANT.SUBMIT]: clsx(

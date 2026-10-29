@@ -1,6 +1,7 @@
 import { CiSearch, CiTrash, CiCirclePlus, CiEdit, CiCircleCheck } from "react-icons/ci";
 import clsx from "clsx";
-import Button, { BUTTON_VARIANT } from "./Button";
+import Button from "./Button";
+import { BUTTON_VARIANT } from "../constants/button-variant";
 
 export default function TopPanelList({ 
     onShowNewItemCard, onEditMode, onDeleteMode,
