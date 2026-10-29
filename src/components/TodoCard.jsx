@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useState } from "react";
 import { CiCircleRemove } from "react-icons/ci";
+import Button, { BUTTON_VARIANT } from "./Button";
 
 const PRIORITIES = ["Low", "Medium", "High"];
 
@@ -112,18 +113,20 @@ function Card({
                 {/* Submit Button & Close Button only appear in "Edit/Update" Mode */}
                 {mode != "Display" 
                 && <span className="flex space-x-2">
-                    <button
-                        className="rounded-xl p-2 font-bold w-fit cursor-pointer bg-red-600 text-white text-center flex space-x-1.5"
+                    <Button
+                        variant={BUTTON_VARIANT.CANCEL}
                         onClick={onCancel}
+                        className="space-x-1.5 flex p-2"
                     >
                         <CiCircleRemove size={28}/>
                         <span>Cancel</span>
-                    </button>
-                    <button
-                        className="rounded-xl p-2 font-bold w-fit cursor-pointer bg-amber-600 text-white"
-                        disabled={false} 
+                    </Button>
+                    <Button
+                        variant={BUTTON_VARIANT.SUBMIT}
+                        disabled={false} // TODO
                         onClick={onSubmit}
-                    >Submit</button>
+                        className="p-2"
+                    ><span>Submit</span></Button>
                 </span>
                 }
             </div>
