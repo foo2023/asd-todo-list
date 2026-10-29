@@ -1,30 +1,57 @@
 import clsx from "clsx";
 import { useState } from "react";
-import { CiCircleRemove } from "react-icons/ci";
-import Button, { BUTTON_VARIANT } from "./Button";
+import { CiCircleCheck, CiCircleRemove } from "react-icons/ci";
+import Button from "./Button";
+import { BUTTON_VARIANT } from "../constants/button-variant";
+import { PRIORITY, STATUS } from "../constants/todo";
 
-const PRIORITIES = ["Low", "Medium", "High"];
-
-const STATUS = ["Completed", "Working"];
+// Describe to the purpose of the card use for(display, create, edit) either one of this at a time for a single card
+export const CARD_MODE = Object.freeze({
+    DISPLAY: "Display",
+    CREATE: "Create",
+    EDIT: "Edit",
+});
 
 // This is the reusable component for display and modifying or creating.
 // All the state is pass from the parrent.
 // to keep everything clean
 function Card({
     title="", description="", 
-    priority="", status="", 
-    mode="Display", onValueChange={},
-    onSubmit=()=>{},
-    onCancel=()=>{}
+    priority=PRIORITY.MEDIUM, status=STATUS.TODO, 
+    mode=CARD_MODE.DISPLAY, // default is display 
+
+    // for DISPLAY (attributes)
+    isCardSelected=false, deleteMode=false,
+    onCardSelect=()=>{},
+
+    // use when the card is for create and edit
+    onValueChange={}, onSubmit=()=>{}, onCancel=()=>{}
+
 }) {
-    const isDisplayMode = mode == "Display" ?true :false;
+    const isDisplayMode = mode == CARD_MODE.DISPLAY? true: false;
+
+    // only appear in delete mode, when the card is for display purpose
+    const itemPicker = () => {
+        return<button 
+                onClick={onCardSelect}
+                className={clsx(
+                    "self-center rounded-full cursor-pointer absolute right-1/12 top-1/2",
+                    isCardSelected ? "bg-green-300" : "text-gray-500"
+            )}>
+                <CiCircleCheck size={24}/>
+            </button>
+    }
+
     return (
 
         // The big container (card)
         <div className={clsx(
-            "flex-row bg-amber-50 rounded-2xl py-3.5 px-5.5 space-y-2",
+            "flex-row bg-amber-50 rounded-2xl py-3.5 px-5.5 space-y-2 relative",
             !isDisplayMode && "drop-shadow-2xl shadow-2xl"
             )}>
+
+            {/* Only appear in the card for "display" when in delete mode */}
+            {isDisplayMode&& deleteMode&& itemPicker()}
 
             {/* The First Row (title & priority) */}
             <div className="flex justify-between">
@@ -44,17 +71,17 @@ function Card({
                 {/* Priority */}
                 <div className={clsx(
                     "rounded-xl p-2 font-bold",
-                    priority == "High" 
-                    ? "bg-red-400 text-white"
-                    : "bg-green-400 text-black"
+                    priority == PRIORITY.HIGH? "bg-red-600 text-white"
+                    : priority == PRIORITY.MEDIUM? "bg-amber-600 text-white"
+                    : "bg-blue-600 text-white" // priority.low
                 )}>
                     {isDisplayMode
                     ? <span>{priority}</span>
                     : <select
                     value={priority}
-                    onChange={(it) => onValueChange.setPriority(it.target.value)}
+                    onChange={(it) => onValueChange.setPriority(it.target.value)} // TODO
                     >
-                        {PRIORITIES.map((p) => (
+                        {Object.values(PRIORITY).map((p) => (
                             <option 
                             key={p} 
                             value={p}
@@ -85,9 +112,9 @@ function Card({
                 {/* Status */}
                 <div className={clsx(
                     "rounded-xl p-2 font-bold w-fit",
-                    status == "Completed" 
-                    ? "bg-green-400 text-white"
-                    : "bg-blue-400 text-white"
+                    status == STATUS.DONE? "bg-green-200 text-black"
+                    : status == STATUS.IN_PROGRESS? "bg-blue-200 text-black"
+                    : "bg-red-200 text-black" // status.todo
                 )}>
                     {isDisplayMode
                     ? <span>{status}</span>
@@ -97,7 +124,7 @@ function Card({
                         value={status}
                         onChange={(it) => onValueChange.setStatus(it.target.value)}
                         >
-                            {STATUS.map((s) => (
+                            {Object.values(STATUS).map((s) => (
                                 <option 
                                 key={s} 
                                 value={s}
@@ -136,20 +163,27 @@ function Card({
     );
 }
 
-export function TodoCard({title, description, priority, status}) {
+export function TodoCard({ title, description, priority, status, isCardSelected, deleteMode, onCardSelect }) {
     return <Card 
         title={title}
         description={description}
         priority={priority}
         status={status}
+        mode={CARD_MODE.DISPLAY}
+        isCardSelected={isCardSelected}
+        deleteMode={deleteMode}
+        onCardSelect={onCardSelect}
     />;
 }
 
 export function TodoCardForms({onConfirm, onClose}) {
+
+    // default data to the user when they creating
+    const id = Math.random();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [priority, setPriority] = useState(PRIORITIES[1]);
-    const [status, setStatus] = useState(STATUS[1]);
+    const [priority, setPriority] = useState(PRIORITY.MEDIUM);
+    const [status, setStatus] = useState(STATUS.TODO);
     return (
         <Card 
             mode="Forms"
@@ -163,9 +197,9 @@ export function TodoCardForms({onConfirm, onClose}) {
             }}
             onSubmit={() => {
                 
-                onConfirm({title, description, priority, status}); // process with submit
+                onConfirm({id, title, description, priority, status}); // process with submit
             }}
-            onCancel={onClose}
+            onCancel={onClose} // callback from children, signal back to the parrent to close the current card
         />
     );
 

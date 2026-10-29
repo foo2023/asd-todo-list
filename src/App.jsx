@@ -10,6 +10,9 @@ function App() {
     const [editMode, setEditMode] = useState(false);
     const [deleteMode, setDeleteMode] = useState(false);
 
+    // onDeleteMode (selecting multiple cards at once)
+    const [cardSelected, setCardSelected] = useState(new Set());
+
     return (
         <>
             <>
@@ -67,14 +70,31 @@ function App() {
                 ? <h2>Todo list is empty.</h2>
                 :<ul className="space-y-3.5"> {
                     todoList.map((data) => (
-                    <li>
-                        <TodoCard 
-                        title={data.title}
-                        description={data.description}
-                        priority={data.priority}
-                        status={data.status}
-                        />
-                    </li>
+                        <li key={data.id}>
+                            <TodoCard
+                            title={data.title}
+                            description={data.description}
+                            priority={data.priority}
+                            status={data.status}
+                            deleteMode={deleteMode} // describe is delete mode or not (state)
+                            isCardSelected={cardSelected.has(data.id)} // describe the card in the selected state or not
+                            onCardSelect={() => {
+                                setCardSelected((prev) => {
+                                    const next = new Set(prev);
+
+                                    if (next.has(data.id)) { // if the id exist in the Set
+                                        // remove it from the Set
+                                        next.delete(data.id);
+                                    } else {
+                                        // add the card in the selected Set
+                                        next.add(data.id);
+                                    }
+
+                                    return next;
+                                })
+                            }} // callback function to toggle card select state
+                            />
+                        </li>
                     ))}
                 </ul>
                 }
