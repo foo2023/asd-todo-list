@@ -1,4 +1,4 @@
-import { CiSearch, CiTrash, CiCirclePlus, CiEdit, CiCircleCheck } from "react-icons/ci";
+import { CiSearch, CiTrash, CiCirclePlus, CiEdit, CiCircleCheck, CiFilter } from "react-icons/ci";
 import clsx from "clsx";
 import Button from "./Button";
 import { BUTTON_VARIANT } from "../constants/button-variant";
@@ -6,7 +6,9 @@ import { BUTTON_VARIANT } from "../constants/button-variant";
 export default function TopPanelList({ 
     onShowNewItemCard, onEditMode, onDeleteMode,
     showNewItemCard, editMode, deleteMode,
-    isSelectAll = false, onSelectAll=()=>{}
+    isSelectAll = false, onSelectAll=()=>{},
+    onSearchPerform=()=>{}, searchQuery="",
+    sortOrder=false, onSortOrder=()=>{}
  }) {
 
     const selectAll = () => ( // select all icon, this icon only appear in delete mode
@@ -45,11 +47,30 @@ export default function TopPanelList({
     }
 
     return (
-        <div className="space-x-3 flex">
+        <div className="space-x-3 flex items-center">
+
+            {/* Search */}
             <div className="flex items-center space-x-2 px-2 rounded-2xl outline">
-                <input className="outline-0" placeholder="Quick Search"/>
+                <input 
+                    className="outline-0" 
+                    placeholder="Quick Search"
+                    value={searchQuery}
+                    onChange={(it) => {onSearchPerform(it.target.value)}}
+                />
                 <CiSearch className="text-amber-800" size={20}/>
             </div>
+
+            {/* Sorting */}
+            <button 
+                onClick={onSortOrder}
+                className={clsx(
+                    "cursor-pointer rounded-full p-1.5",
+                    sortOrder? "bg-white/50": "hover:bg-white/50"
+                )}
+            >
+                <CiFilter className="text-amber-800"/>
+            </button>
+
             {panelItems.map((item) => {
                 const Icon = item.icon;
                 return (
