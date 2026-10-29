@@ -17,7 +17,7 @@ export function priority_asc(priority) {
     switch(priority) {
         case PRIORITY.HIGH: return 1;
         case PRIORITY.MEDIUM: return 2;
-        case PRIORITY.HIGH: return 3;
+        case PRIORITY.LOW: return 3;
         default: throw new Error(`Unknown priority: ${priority}`);
     }
 }
